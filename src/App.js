@@ -1,6 +1,7 @@
 import React from 'react';
 import BuildLog from './BuildLog';
 import NextPlans from './NextPlans';
+import Chart from './Chart';
 
 function App() {
   return (
@@ -31,34 +32,20 @@ function App() {
           <div className="lg:col-span-2 space-y-6">
             
             {/* Feature Placeholder 1 - Main Feature */}
-            <div className="bg-white rounded-xl shadow-lg p-8 border-2 border-dashed border-gray-200 min-h-[400px]">
-              <div className="text-center text-gray-400 h-full flex flex-col justify-center">
-                <div className="text-5xl mb-4">🚀</div>
-                <h3 className="text-xl font-medium text-gray-600 mb-3">Main Feature Area</h3>
-                <p className="text-gray-500 mb-4">Perfect for a dashboard, charts, or your primary new feature</p>
-                <div className="text-xs text-gray-400 bg-gray-50 px-3 py-2 rounded-lg inline-block">
-                  Suggested: Progress Dashboard, Goal Tracker, or Analytics
-                </div>
-              </div>
+            <div>
+              <Chart />
             </div>
 
             {/* Feature Placeholder 2 & 3 - Side by Side */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               
               {/* Feature Placeholder 2 */}
-              <div className="bg-white rounded-xl shadow-lg p-6 border-2 border-dashed border-gray-200 min-h-[250px]">
-                <div className="text-center text-gray-400 h-full flex flex-col justify-center">
-                  <div className="text-3xl mb-3">📊</div>
-                  <h4 className="text-lg font-medium text-gray-600 mb-2">Secondary Feature</h4>
-                  <p className="text-gray-500 text-sm mb-3">Great for stats or tools</p>
-                  <div className="text-xs text-gray-400 bg-gray-50 px-2 py-1 rounded text-center">
-                    Ideas: Statistics, Calendar, Quick Actions
-                  </div>
-                </div>
+              <div>
+                Coming Soon
               </div>
 
               {/* Feature Placeholder 3 */}
-              <div className="bg-white rounded-xl shadow-lg p-6 border-2 border-dashed border-gray-200 min-h-[250px]">
+              <div>
                 <NextPlans />
               </div>
 

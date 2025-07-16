@@ -7,10 +7,18 @@ function BuildLog() {
     const savedLogs = localStorage.getItem('buildLogs');
     return savedLogs ? JSON.parse(savedLogs) : [];
   });
+  
+  // State for expanding/collapsing logs
+  const [isExpanded, setIsExpanded] = useState(false);
 
   // Save to localStorage whenever logs change
   useEffect(() => {
     localStorage.setItem('buildLogs', JSON.stringify(logs));
+    
+    // Dispatch custom event to notify other components
+    window.dispatchEvent(new CustomEvent('buildLogsUpdated', {
+      detail: { logs: logs }
+    }));
   }, [logs]);
 
   const handleSubmit = (e) => {
@@ -22,11 +30,25 @@ function BuildLog() {
   };
 
   const handleDeleteLogs = () => {
-    const confirmed = window.confirm("Are you sure you want to delete all logs?");
-    if (confirmed) {
+    try {
+      const confirmed = window.confirm("Are you sure you want to delete all logs?");
+      
+      if (confirmed) {
+        setLogs([]);
+        setIsExpanded(false);
+      }
+    } catch (error) {
+      // Fallback: clear without confirmation if there's an error
       setLogs([]);
+      setIsExpanded(false);
     }
   };
+
+  // Determine which logs to show
+  const PREVIEW_COUNT = 4;
+  const reversedLogs = [...logs].reverse();
+  const displayLogs = isExpanded ? reversedLogs : reversedLogs.slice(0, PREVIEW_COUNT);
+  const hasMoreLogs = logs.length > PREVIEW_COUNT;
 
   return (
     <div className="p-4 w-full">
@@ -67,20 +89,48 @@ function BuildLog() {
       {/* Logs Section */}
       {logs.length > 0 && (
         <div className="mt-8">
-          <h3 className="text-xl font-bold text-gray-800 mb-4 flex items-center gap-2">
-            📚 Your Build History
-            <span className="bg-blue-100 text-blue-800 text-xs font-medium px-2.5 py-0.5 rounded-full">
-              {logs.length} {logs.length === 1 ? 'entry' : 'entries'}
-            </span>
-          </h3>
+          {/* Header with controls */}
+          <div className="flex justify-between items-center mb-4">
+            <h3 className="text-xl font-bold text-gray-800 flex items-center gap-2">
+              📚 Your Build History
+              <span className="bg-blue-100 text-blue-800 text-xs font-medium px-2.5 py-0.5 rounded-full">
+                {logs.length} {logs.length === 1 ? 'entry' : 'entries'}
+              </span>
+            </h3>
+            
+            <button 
+              onClick={handleDeleteLogs}
+              className="bg-red-500 text-white px-3 py-1 rounded text-xs hover:bg-red-600 transition-colors"
+            >
+              Clear All
+            </button>
+          </div>
+
+          {/* Expand/Collapse Controls */}
+          {hasMoreLogs && (
+            <div className="mb-4 flex justify-center">
+              <button
+                onClick={() => setIsExpanded(!isExpanded)}
+                className="bg-gray-100 hover:bg-gray-200 text-gray-700 px-4 py-2 rounded-lg text-sm font-medium transition-colors flex items-center gap-2"
+              >
+                {isExpanded ? (
+                  <>
+                    <span>Show Less</span>
+                    <span className="text-xs">↑</span>
+                  </>
+                ) : (
+                  <>
+                    <span>Show All {logs.length} Logs</span>
+                    <span className="text-xs">↓</span>
+                  </>
+                )}
+              </button>
+            </div>
+          )}
           
-          <button onClick={handleDeleteLogs}
-  className="mt-2 ml-2 bg-red-500 text-white px-4 py-2 rounded">
-            Clear Logs
-          </button>
-          
-          <div className="space-y-4">
-            {[...logs].reverse().map((entry, index) => (
+          {/* Logs Container */}
+          <div className={`space-y-4 ${isExpanded ? 'max-h-96 overflow-y-auto pr-2' : ''}`}>
+            {displayLogs.map((entry, index) => (
               <div 
                 key={logs.length - index - 1}  // Use original index for key
                 className="bg-white rounded-xl p-5 shadow-md border-l-4 border-blue-400 hover:shadow-lg transition-shadow duration-200"
@@ -103,6 +153,15 @@ function BuildLog() {
               </div>
             ))}
           </div>
+
+          {/* Show count when collapsed */}
+          {!isExpanded && hasMoreLogs && (
+            <div className="mt-4 text-center">
+              <p className="text-gray-500 text-sm">
+                Showing {PREVIEW_COUNT} of {logs.length} logs
+              </p>
+            </div>
+          )}
         </div>
       )}
 
